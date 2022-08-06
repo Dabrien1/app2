@@ -1,12 +1,18 @@
-import libratom, sqlite3, time
+from pathlib import Path
+import sys
+from .parse_pst import get_email
 
-def email_digest(): 
+
+def email_digest(pst_file): 
     '''function to scan target pst every hour and output a digest of recent activity'''
-    
-    #TODO: 
-    #TODO: connect to database -> con = sqlite3.connect('example.db') OR maybe use special path name ':memory:' to create a temporary database in RAM
-    #TODO: parse pst 
-    #TODO: identify new emails (received in last 45 minutes, ref system time; time format in sqlite3 database = '2022-07-16 09:02:27.000000')
-    #TODO: deliver digest (how? via system notification?, create and display .txt?)
-    #TODO: delete database if necessary
-    #TODO: run code every 60 minutes
+    test = get_email(pst_file)
+    print(test)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) == 2:
+        pst_file = Path(sys.argv[1])
+    else:
+        raise ValueError("no pst file provided")
+
+    email_digest(pst_file)
