@@ -13,10 +13,7 @@ def get_email(pst_file):
 
     message_data = folder_traverse(root, [], **{'pst_name': pst_file, 'folder_name': 'root'})
 
-    header = ['pst_name', 'folder_name', 'creation_time', 'submit_time', 'delivery_time',
-              'sender', 'subject', 'attachment_count']
-
-    return message_data, header
+    return message_data
 
 
 def folder_traverse(base, message_data, pst_name, folder_name):

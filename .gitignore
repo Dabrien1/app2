@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Outlook
+*.pst
+
+# Sqlite3
+*.sqlite3
+*.Sqlite3
