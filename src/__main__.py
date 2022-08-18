@@ -1,14 +1,27 @@
-from datetime import datetime, timedelta
+import os
 import sys
-from .parse_pst import get_email
+from datetime import datetime, timedelta
 
+from .parse_pst import get_email
 
 FIELD = "subject"
 LAST_HOUR_TEST = datetime(2022, 7, 16, 18, 0, 0, 0) - timedelta(
     hours=1
 )  # only used for dev purposes
 
-LAST_HOUR = datetime.now() - timedelta(hours=1) # for 'real time' use
+LAST_HOUR = datetime.now() - timedelta(hours=1)  # for 'real time' use
+
+
+def is_windows():
+    """
+    https://stackoverflow.com/a/1325587
+    """
+    return os.name == "nt"
+
+
+def open_text_file(text_file):
+    open_cmd = "start" if is_windows() else "open"
+    os.system(f"{open_cmd} {text_file}")  # noqa S605
 
 
 def email_digest(pst_file):
@@ -26,9 +39,18 @@ def email_digest(pst_file):
                         }
                     )
 
+    # TODO: write to a file
     for message in digest:
         result = " | ".join(str(val) for val in message.values())
         print(result)
+
+    # return filename
+
+
+def main(pst_file):
+    digest_file = email_digest(pst_file)
+    # TODO: play audio sound
+    open_text_file(digest_file)
 
 
 if __name__ == "__main__":
@@ -38,4 +60,4 @@ if __name__ == "__main__":
         print("Please provide a PST file")
         sys.exit(1)
 
-    email_digest(pst_file)
+    main(pst_file)
