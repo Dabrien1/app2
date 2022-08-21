@@ -1,5 +1,7 @@
+from curses import beep
 import os
 import sys
+from playsound import playsound
 from datetime import datetime, timedelta
 
 from .parse_pst import get_email
@@ -27,6 +29,7 @@ def open_text_file(text_file):
 def email_digest(pst_file):
     emails = get_email(pst_file)
     digest = []
+    
     for mail in emails:
         for key in mail:
             if key in FIELD:
@@ -40,16 +43,21 @@ def email_digest(pst_file):
                     )
 
     # TODO: write to a file
-    for message in digest:
-        result = " | ".join(str(val) for val in message.values())
-        print(result)
-
+    with open('digest.txt', 'w') as output:
+        for message in digest:
+            result = " | ".join(str(val) for val in message.values())
+            output.write(f'{result}\n')
+        output.close()
+        return  
+        
     # return filename
 
 
 def main(pst_file):
     digest_file = email_digest(pst_file)
+    #url = urllib.request.urlopen('https://soundbible.com/2218-Service-Bell-Help.html#google_vignette')
     # TODO: play audio sound
+    #playsound(url)
     open_text_file(digest_file)
 
 
