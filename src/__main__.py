@@ -1,8 +1,8 @@
-from curses import beep
 import os
 import sys
-from playsound import playsound
 from datetime import datetime, timedelta
+
+import simpleaudio as sa
 
 from .parse_pst import get_email
 
@@ -12,24 +12,21 @@ LAST_HOUR_TEST = datetime(2022, 7, 16, 18, 0, 0, 0) - timedelta(
 )  # only used for dev purposes
 
 LAST_HOUR = datetime.now() - timedelta(hours=1)  # for 'real time' use
+OUTPUT_FILE = "digest.txt"
+ALARM_FILE = "alarm.wav"
 
 
-def is_windows():
+def _is_windows():
     """
     https://stackoverflow.com/a/1325587
     """
     return os.name == "nt"
 
 
-def open_text_file(text_file):
-    open_cmd = "start" if is_windows() else "open"
-    os.system(f"{open_cmd} {text_file}")  # noqa S605
-
-
-def email_digest(pst_file):
+def create_digest_of_latest_emails(pst_file):
     emails = get_email(pst_file)
     digest = []
-    
+
     for mail in emails:
         for key in mail:
             if key in FIELD:
@@ -42,23 +39,25 @@ def email_digest(pst_file):
                         }
                     )
 
-    # TODO: write to a file
-    with open('digest.txt', 'w') as output:
+    with open(OUTPUT_FILE, "w") as output:
         for message in digest:
             result = " | ".join(str(val) for val in message.values())
-            output.write(f'{result}\n')
-        output.close()
-        return  
-        
-    # return filename
+            output.write(f"{result}\n")
+
+
+def play_alarm_sound():
+    sa.WaveObject.from_wave_file(ALARM_FILE).play()
+
+
+def open_digest_in_text_editor(text_file):
+    open_cmd = "start" if _is_windows() else "open"
+    os.system(f"{open_cmd} {text_file}")  # noqa S605
 
 
 def main(pst_file):
-    digest_file = email_digest(pst_file)
-    #url = urllib.request.urlopen('https://soundbible.com/2218-Service-Bell-Help.html#google_vignette')
-    # TODO: play audio sound
-    #playsound(url)
-    open_text_file(digest_file)
+    create_digest_of_latest_emails(pst_file)
+    play_alarm_sound()
+    open_digest_in_text_editor(OUTPUT_FILE)
 
 
 if __name__ == "__main__":
