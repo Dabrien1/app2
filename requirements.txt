@@ -1,1 +1,4 @@
 libpff-python
+# playsound
+simpleaudio
+pydub
